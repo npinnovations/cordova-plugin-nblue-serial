@@ -1,0 +1,33 @@
+{
+  "name": "cordova-plugin-nblue-serial",
+  "version": "1.0.1",
+  "description": "nBlue Serial Communication Plugin",
+  "cordova": {
+    "id": "cordova-plugin-nblue-serial",
+    "platforms": [
+      "android",
+      "ios",
+      "wp8",
+      "windows",	
+      "browser"]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/don/BluetoothSerial.git"
+  },
+  "keywords": [
+    "cordova",
+    "bluetooth",
+    "serial",
+    "ble",
+    "arduino",	
+    "nBlue",
+    "ecosystem:cordova"
+  ],
+  "author": "Don Coleman <don.coleman@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/don/BluetoothSerial/issues"
+  },
+  "homepage": "https://github.com/don/BluetoothSerial#readme"
+}
