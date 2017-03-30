@@ -1,6 +1,6 @@
 # Bluetooth Serial Plugin for PhoneGap
 
-This plugin enables serial communication over Bluetooth. It was written for communicating between Android or iOS and an Arduino.
+This plugin enables serial communication over Bluetooth. It was originally written for communicating between Android or iOS and an Arduino. This plugin was modified for use with nBlue BlueRadio chips used in the iManifold.
 
 Android and Windows Phone use Classic Bluetooth.  iOS uses Bluetooth Low Energy.
 
@@ -10,7 +10,7 @@ Android and Windows Phone use Classic Bluetooth.  iOS uses Bluetooth Low Energy.
 * iOS modified to only work with nBlue BlueRadio chipset.
 * Windows Phone 8
 * Windows Universal Platform (Windows 8, Windows 8.1, Windows 10): (methods implemented so far: connect, disconnect, list, isEnabled, available, read, readUntil, write, subscribe, unsubscribe, subscribeRaw, unsubscribeRaw, clear)
-* Browser (Testing only. See [comments]
+* Browser (Testing only. See [comments from original author Don Coleman]
 (https://github.com/don/BluetoothSerial/blob/master/src/browser/bluetoothSerial.js).)
 
 
@@ -25,9 +25,11 @@ Android and Windows Phone use Classic Bluetooth.  iOS uses Bluetooth Low Energy.
 
 DO NOT Install with Cordova cli
 
-    $ cordova plugin add from bitbucket for now
+    add from bitbucket for now
 
-Note that the original plugin's id changed from `com.megster.cordova.bluetoothserial` to `cordova-plugin-bluetooth-serial` as part of the migration from the [Cordova plugin repo](http://plugins.cordova.io/) to [npm](https://www.npmjs.com/). NPI adapted this plugin for use with BlueRadio chips. It is now named `cordova-plugin-nblue-serial`
+Note that the original plugin's id changed from `com.megster.cordova.bluetoothserial` to `cordova-plugin-bluetooth-serial` as part of the migration from the [Cordova plugin repo](http://plugins.cordova.io/) to [npm](https://www.npmjs.com/). 
+
+NPI adapted this plugin for use with BlueRadio chips. It is now named `cordova-plugin-nblue-serial`
 
 # Examples
 
