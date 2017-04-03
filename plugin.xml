@@ -9,8 +9,8 @@
     <description>Bluetooth Serial Communication Plugin</description>
     <license>Apache 2.0</license>
     <keywords>bluetooth, BLE, arduino, nBlue</keywords>
-    <repo>https://github.com/don/BluetoothSerial.git</repo>
-    <issue>https://github.com/don/BluetoothSerial/issues</issue>
+    <repo>https://github.com/bucktaylor/nBlueSerial.git</repo>
+    <issue>https://github.com/bucktaylor/nBlueSerial/issues</issue>
     
     <engines>
 	<!-- Windows universal apps (Windows 8.1, Windows Phone 8.1, Windows 10) -->

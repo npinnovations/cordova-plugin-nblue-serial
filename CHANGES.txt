@@ -1,3 +1,7 @@
+= 1.0.1 =
+Modified plugin for use with BlueRadios nBlue dual chipset.
+
+
 = 0.4.6 =
 Add support for Android 6.0 (API 23) Permissions. Thanks Sundypha #194, #226, #228
 
