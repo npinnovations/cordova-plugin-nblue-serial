@@ -8,8 +8,9 @@
       "android",
       "ios",
       "wp8",
-      "windows",	
-      "browser"]
+      "windows",
+      "browser"
+    ]
   },
   "repository": {
     "type": "git",
@@ -20,7 +21,7 @@
     "bluetooth",
     "serial",
     "ble",
-    "arduino",	
+    "arduino",
     "nBlue",
     "ecosystem:cordova"
   ],
@@ -29,5 +30,12 @@
   "bugs": {
     "url": "https://github.com/don/BluetoothSerial/issues"
   },
-  "homepage": "https://github.com/don/BluetoothSerial#readme"
+  "homepage": "https://github.com/don/BluetoothSerial#readme",
+  "main": "bluetoothSerial.js",
+  "directories": {
+    "example": "examples"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  }
 }
