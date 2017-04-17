@@ -20,7 +20,6 @@ module.exports = {
     },
 
     isEnabled: function (success, failure) {
-
         cordova.exec(success, failure, "BluetoothSerial", "isEnabled", []);
     },
 
@@ -49,7 +48,7 @@ module.exports = {
 
         // convert to ArrayBuffer
         if (typeof data === 'string') {
-            console.log(data);
+            console.log("String in: " + data);
             data = stringToArrayBuffer(data);
         } else if (data instanceof Array) {
             // assuming array of interger
@@ -57,7 +56,7 @@ module.exports = {
         } else if (data instanceof Uint8Array) {
             data = data.buffer;
         }
-        console.log(data);
+        console.log("String out: " + data);
         cordova.exec(success, failure, "BluetoothSerial", "write", [data]);
     },
 
