@@ -12,7 +12,7 @@ module.exports = {
 
     disconnect: function (success, failure) {
         cordova.exec(success, failure, "BluetoothSerial", "disconnect", []);
-/    },
+    },
 
     // list bound devices
     list: function (success, failure) {
