@@ -49,7 +49,7 @@ module.exports = {
         // convert to ArrayBuffer
         if (typeof data === 'string') {
             console.log("String in: " + data);
-            //data = stringToArrayBuffer(data);
+            data = stringToArrayBuffer(data);
         } else if (data instanceof Array) {
             // assuming array of interger
             data = new Uint8Array(data).buffer;
