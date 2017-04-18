@@ -45,18 +45,21 @@ module.exports = {
     // writes data to the bluetooth serial port
     // data can be an ArrayBuffer, string, integer array, or Uint8Array
     write: function (data, success, failure) {
-
+        var vendor = navigator.vendor;
+        var isIOS = vendor.indexOf("Apple");
         // convert to ArrayBuffer
-        if (typeof data === 'string') {
-            console.log("String in: " + data);
-            data = stringToArrayBuffer(data);
-        } else if (data instanceof Array) {
-            // assuming array of interger
-            data = new Uint8Array(data).buffer;
-        } else if (data instanceof Uint8Array) {
-            data = data.buffer;
+        if (isIOS === -1) {
+            if (typeof data === 'string') {
+                //console.log("String in: " + data);
+                data = stringToArrayBuffer(data);
+            } else if (data instanceof Array) {
+                // assuming array of interger
+                data = new Uint8Array(data).buffer;
+            } else if (data instanceof Uint8Array) {
+                data = data.buffer;
+            }
         }
-        console.log("String out: " + data);
+        
         cordova.exec(success, failure, "BluetoothSerial", "write", [data]);
     },
 
@@ -135,10 +138,13 @@ module.exports = {
 
 };
 
-var stringToArrayBuffer = function(str) {
-    var ret = new Uint8Array(str.length);
-    for (var i = 0; i < str.length; i++) {
+var stringToArrayBuffer = function (str) {
+    var len = str.length;
+    var buf = new ArrayBuffer(len);
+    var ret = new Uint8Array(buf);
+    for (var i = 0; i < len; i++) {
         ret[i] = str.charCodeAt(i);
     }
-    return ret.buffer;
+    //return ret.buffer;
+    return buf;
 };
