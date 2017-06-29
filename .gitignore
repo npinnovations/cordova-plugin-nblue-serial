@@ -46,3 +46,8 @@ node_modules
 *~
 
 .idea/*
+/.vs/cordova-plugin-nblue-serial/v15/Browse.VC.opendb
+/.vs/cordova-plugin-nblue-serial/v15/Browse.VC.db
+/.vs/cordova-plugin-nblue-serial/v15/.suo
+/.vs/ProjectSettings.json
+/.vs

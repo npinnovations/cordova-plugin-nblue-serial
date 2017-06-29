@@ -250,18 +250,39 @@ module.exports = {
 	// TODO find a better way to do this
 	// If there are no RFCOMM devices paired, this reports Bluetooth is disabled
 	isEnabled: function(success, failure, args) {
-		deviceInfo.findAllAsync(
-			Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService.getDeviceSelector(
-				Windows.Devices.Bluetooth.Rfcomm.RfcommServiceId.serialPort			
-			),
-			null
-		).then(function(devices) {
-			if (devices.length > 0) {
-				success(); // enabled
-			} else {
-				failure(); // not enabled
-			}
-		});
+		//deviceInfo.findAllAsync(
+		//	Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService.getDeviceSelector(
+		//		Windows.Devices.Bluetooth.Rfcomm.RfcommServiceId.serialPort			
+		//	),
+		//	null
+		//).then(function(devices) {
+		//	if (devices.length > 0) {
+		//		success(); // enabled
+		//	} else {
+		//		failure(); // not enabled
+		//	}
+  //          });
+        deviceInfo.findAllAsync(
+            Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService.getDeviceSelector(
+                Windows.Devices.Bluetooth.Rfcomm.RfcommServiceId.serialPort
+            ),
+            null
+        ).then(function (devices) {
+            if (devices.length > 0) {
+                //var results = [];
+
+                //for (var i = 0; i < devices.length; i++) {
+                //    // TODO parse MAC address out of the id
+                //    // TODO see if there's a way to get the correct device name
+                //    // The windows permission dialog has the correct name  					
+                //    results.push({ name: devices[i].name, id: devices[i].id });
+                //}
+                success(results);
+            }
+            else {
+                failure("Bluetooth not enabled.");
+            }
+        });
 	},
 	
 	available: function(success, failure, args) {
