@@ -259,8 +259,6 @@ module.exports = {
             if (devices.length > 0) {
                 success(); // enabled
             } else {
-                function list(success, failure, args) {
-
                     deviceInfo.findAllAsync(
                         Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService.getDeviceSelector(
                             Windows.Devices.Bluetooth.Rfcomm.RfcommServiceId.serialPort
@@ -282,10 +280,8 @@ module.exports = {
                             failure("Bluetooth not enabled.");
                         }
                     });
-                    list(success, failure, args);
                     //failure(); // not enabled
                 }
-            }
             });
 	},
 	
