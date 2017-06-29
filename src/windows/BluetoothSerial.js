@@ -249,7 +249,8 @@ module.exports = {
 	
 	// TODO find a better way to do this
 	// If there are no RFCOMM devices paired, this reports Bluetooth is disabled
-	isEnabled: function(success, failure, args) {
+    isEnabled: function (success, failure, args) {
+        var prop = this;
 		deviceInfo.findAllAsync(
 			Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService.getDeviceSelector(
 				Windows.Devices.Bluetooth.Rfcomm.RfcommServiceId.serialPort			
@@ -259,7 +260,7 @@ module.exports = {
 			if (devices.length > 0) {
 				success(); // enabled
             } else {
-                this.list(success, failure);
+                prop.list(success, failure);
 				//failure(); // not enabled
 			}
             });
