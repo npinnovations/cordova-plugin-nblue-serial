@@ -1,6 +1,7 @@
 var app = WinJS.Application;
 var bluetooth = Windows.Devices.Bluetooth;
 var deviceInfo = Windows.Devices.Enumeration.DeviceInformation;
+var devEnum = Windows.Devices.Enumeration;
 var rfcomm = Windows.Devices.Bluetooth.Rfcomm;
 var sockets = Windows.Networking.Sockets;
 var streams = Windows.Storage.Streams;
@@ -14,7 +15,9 @@ var subscribeCallback, subscribeRawCallback, disconnectCallback;
 var isClosing = false;
 var receivedBytes = [];
 
-var bytesToString = function(bytes) {
+//***Helper Functions
+
+function bytesToString(bytes) {
     // based on http://ciaranj.blogspot.fr/2007/11/utf8-characters-encoding-in-javascript.html
 
     var result = "";
@@ -65,7 +68,7 @@ var bytesToString = function(bytes) {
     return result;
 }
 
-var stringToBytes = function(string) {
+function stringToBytes(string) {
     // based on http://ciaranj.blogspot.fr/2007/11/utf8-characters-encoding-in-javascript.html
 
     var bytes = [];
@@ -96,8 +99,7 @@ var stringToBytes = function(string) {
     return bytes;
 }
 
-// read received data up until the chars that define the delimiter
-var readUntil = function(chars) { 
+function readUntil(chars) { // read received data up until the chars that define the delimiter
     var dataAsString = bytesToString(receivedBytes);
     var index = dataAsString.indexOf(chars);
     var data = "";
@@ -114,7 +116,7 @@ var readUntil = function(chars) {
 }
 
 // This sends data if we've hit the delimiter
-var	sendDataToSubscriber = function() {
+function sendDataToSubscriber() {
     var data = readUntil(delimiter);
 	
     if (data && data.length > 0) {
@@ -125,7 +127,7 @@ var	sendDataToSubscriber = function() {
     }
 }
 
-var receiveStringLoop = function () {
+function receiveStringLoop() {
 // read one byte at a time
     if ( reader ) {
         reader.loadAsync( 1 ).then(
@@ -151,14 +153,6 @@ var receiveStringLoop = function () {
 
                 return receiveStringLoop();
 
-                //WinJS.Promise.timeout().done(
-                //    function () {
-                //        return receiveStringLoop( reader );
-                //    },
-                //    function ( error ) {
-                //        console.log( error );
-                //    }
-                //);
             },
             function ( error ) {
                 console.log( 'Failed to read the data, with error: ' + error );
@@ -174,77 +168,82 @@ module.exports = {
 
     list: function (success, failure, args) {
 
-	    deviceInfo.findAllAsync(
-		    Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService.getDeviceSelector(
-			    Windows.Devices.Bluetooth.Rfcomm.RfcommServiceId.serialPort			
-		    ),
-		    null
-        ).done(
+        var selector = Windows.Devices.Bluetooth.BluetoothDevice.getDeviceSelector( Windows.Devices.Bluetooth.Rfcomm.RfcommServiceId.serialPort ); //For paired and known devices
+
+        deviceInfo.findAllAsync( selector, null ).done(
             function ( devices ) {
 			    if (devices.length > 0) {
 				    var results = [];
 
-				    for (var i = 0; i < devices.length; i++) {
-                        // TODO parse MAC address out of the id
-					    // TODO see if there's a way to get the correct device name
-					    // The windows permission dialog has the correct name  					
+				    for (var i = 0; i < devices.length; i++) {				
 					    results.push({ name: devices[i].name, id: devices[i].id });
 				    }
 				    success(results);
 			    }
-			    else {
-				    failure("No Bluetooth devices found.");
+                else {
+                    //Start a watcher!
+                    successFn = success;
+                    failureFn = failure;
+                    startWatcher();
 			    }
             },
             function ( error ) {
                 failure( "No Bluetooth devices found." );
             }
-            );
+        );
     },
 	
     connect: function(success, failure, args) {
 	    var id = args[0];
         disconnectCallback = failure;
+        if ( !id || id === "" ) { return;}
 
-	    // Initialize the target Rfcomm service
-	    rfcomm.RfcommDeviceService.fromIdAsync(id).done(
-		    function (service) {
-			    if (service === null) {
-				    failure("Access to the device is denied because the application was not granted access.");	
-			    }
-                else {
-                    device = service.device;
-				    socket = new sockets.StreamSocket();
+        bluetooth.BluetoothDevice.fromIdAsync(id).then(
+            function ( bluetoothDevice ) {
+                bluetoothDevice.getRfcommServicesAsync().done(
+                    function ( services ) {
+                        var service = services.services[0];
+                        if ( services.error !== 0 ) {
+                            failure( "Access to the device is denied because the application was not granted access." );
+                        }
+                        else {
+                            device = service.device;
+                            socket = new sockets.StreamSocket();
 
-				    if (service.connectionHostName && service.connectionServiceName) {
-					    socket.connectAsync(
-						    service.connectionHostName,
-						    service.connectionServiceName
-					    ).done(function () {
-						    writer = new streams.DataWriter(socket.outputStream);
-						    writer.byteOrder = streams.ByteOrder.littleEndian;
-						    writer.unicodeEncoding = streams.UnicodeEncoding.utf8;
-							
-						    reader = new streams.DataReader(socket.inputStream);
-						    reader.unicodeEncoding = streams.UnicodeEncoding.Utf8;
-						    reader.byteOrder = streams.ByteOrder.littleEndian;
-							
-						    receiveStringLoop();
-							
-						    success("Connected.");
-					    },
-					    function(e){
-						    failure(e.toString());
-					    });
-				    } else {
-					    failure("Impossible to determine the HostName or the ServiceName.");
-				    }
-			    }
-		    },
-		    function(e){
-			    failure(e.toString());
-		    }
-	    );
+                            if ( service.connectionHostName && service.connectionServiceName ) {
+                                socket.connectAsync(
+                                    service.connectionHostName,
+                                    service.connectionServiceName
+                                ).done( function () {
+                                    writer = new streams.DataWriter( socket.outputStream );
+                                    writer.byteOrder = streams.ByteOrder.littleEndian;
+                                    writer.unicodeEncoding = streams.UnicodeEncoding.utf8;
+
+                                    reader = new streams.DataReader( socket.inputStream );
+                                    reader.unicodeEncoding = streams.UnicodeEncoding.Utf8;
+                                    reader.byteOrder = streams.ByteOrder.littleEndian;
+
+                                    receiveStringLoop();
+
+                                    success( "Connected." );
+                                },
+                                    function ( e ) {
+                                        failure( e.toString() );
+                                    } );
+                            } else {
+                                failure( "Impossible to determine the HostName or the ServiceName." );
+                            }
+                        }
+                    },
+                    function ( e ) {
+                        failure( e.toString() );
+                    }
+                );    
+            },
+            function ( error ) {
+                failure( "Not able to connecto to RFcomm device" );
+            }
+        );
     },
 	
     connectInsecure: function(success, failure, args) {
@@ -283,42 +282,46 @@ module.exports = {
         }
     },
 
-    // TODO find a better way to do this
-    // If there are no RFCOMM devices paired, this reports Bluetooth is disabled
-    isEnabled: function (success, failure, args) {
-	    deviceInfo.findAllAsync(
-		    Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService.getDeviceSelector(
-			    Windows.Devices.Bluetooth.Rfcomm.RfcommServiceId.serialPort			
-		    ),
-		    null
-	    ).then(function(devices) {
-            if (devices.length > 0) {
-                success(); // enabled
-            } else {
-                    deviceInfo.findAllAsync(
-                        Windows.Devices.Bluetooth.Rfcomm.RfcommDeviceService.getDeviceSelector(
-                            Windows.Devices.Bluetooth.Rfcomm.RfcommServiceId.serialPort
-                        ),
-                        null
-                    ).then(function (devices) {
-                        if (devices.length > 0) {
-                            var results = [];
+    isEnabled: function ( success, failure, args ) {
+        //What args?
 
-                            for (var i = 0; i < devices.length; i++) {
-                                // TODO parse MAC address out of the id
-                                // TODO see if there's a way to get the correct device name
-                                // The windows permission dialog has the correct name  					
-                                results.push({ name: devices[i].name, id: devices[i].id });
+        Windows.Devices.Radios.Radio.requestAccessAsync().then(
+            function ( access ) {
+                if ( access === Windows.Devices.Radios.RadioAccessStatus.allowed ) {
+
+                    bluetooth.BluetoothAdapter.getDefaultAsync().then(
+                        function ( adapter ) {
+                            if ( adapter !== null ) {
+                                adapter.getRadioAsync().done(
+                                    function ( btRadio ) {
+                                        if ( btRadio.state === Windows.Devices.Radios.RadioState.on ) {
+                                            success();
+                                        } else {
+                                            var accessFail = returnEnum( btRadio.state, Windows.Devices.Radios.RadioState );
+                                            failure( "Bluetooth radio failure: " + accessFail );
+                                        }
+                                    },
+                                    function ( error ) {
+                                        failure( error );
+                                    }
+                                );
+                            } else {
+                                failure( "No bluetooth radio found" );
                             }
-                            success(results);
+                        },
+                        function ( error ) {
+                            failure( error );
                         }
-                        else {
-                            failure("Bluetooth not enabled.");
-                        }
-                    });
-                    //failure(); // not enabled
+                    );
+                } else {
+                    var accessFail = returnEnum( access, Windows.Devices.Radios.RadioAccessStatus );
+                    failure( "Access to bluetooth radio rejected: " + accessFail );
                 }
-            });
+            },
+            function ( error ) {
+                failure( error );
+            }
+        );
     },
 	
     available: function(success, failure, args) {
