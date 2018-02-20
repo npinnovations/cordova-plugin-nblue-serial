@@ -3,7 +3,7 @@
     xmlns="http://www.phonegap.com/ns/plugins/1.0"
     xmlns:android="http://schemas.android.com/apk/res/android"
     id="cordova-plugin-nblue-serial"
-    version="1.0.2">
+    version="1.0.3">
 
     <name>nBlue Serial</name>
     <description>Bluetooth Serial Communication Plugin</description>
@@ -98,7 +98,7 @@
     <!-- Windows universal apps (Windows 8.1, Windows Phone 8.1, Windows 10) -->
     <platform name="windows">
         <js-module src="src/windows/BluetoothSerial.js" name="BluetoothSerial">
-            <merges target="" />
+            <runs />
         </js-module>
 
         <config-file target="package.windows10.appxmanifest" parent="/Package/Capabilities">
