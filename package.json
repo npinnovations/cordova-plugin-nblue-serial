@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-nblue-serial",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "nBlue Serial Communication Plugin",
   "cordova": {
     "id": "cordova-plugin-nblue-serial",
