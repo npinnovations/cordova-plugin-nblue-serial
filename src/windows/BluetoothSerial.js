@@ -156,7 +156,7 @@ function receiveStringLoop() {
             },
             function ( error ) {
                 console.log( 'Failed to read the data, with error: ' + error );
-                WinJS.Promise.timeout( 1000 ).done( function () { return receiveStringLoop( reader ); } );
+                //WinJS.Promise.timeout( 1000 ).done( function () { return receiveStringLoop( reader ); } );
             }
         );
 
