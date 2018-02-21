@@ -135,7 +135,7 @@ function receiveStringLoop() {
                 if ( size !== 1 ) {
                     //bluetoothSerial.disconnect();
                     console.log( 'The underlying socket was closed before we were able to read the whole data. Client disconnected.' );
-                    //disconnectCallback( "Socket closed" ); // TODO determine why this isn't working
+                    disconnectCallback( "Socket closed" ); // TODO determine why this isn't working
                     return;
                 }
 
@@ -199,7 +199,7 @@ module.exports = {
             id: id,
             status: "connected"
         };
-        disconnectCallback = failure;
+        //disconnectCallback = failure;
 
         if ( !id || id === "" ) { return;}
 
@@ -373,21 +373,25 @@ module.exports = {
     },
 	
     subscribe: function(success, failure, args) {
-	    delimiter = args[0];
+        delimiter = args[0];
+        disconnectCallback = failure;
 	    subscribeCallback = success;
     },
 	
     unsubscribe: function(success, failure, args) {
-	    delimiter = "";
+        delimiter = "";
+        disconnectCallback = null;
 	    subscribeCallback = null;
 	    success("Unsubscribed.");
     },
 	
-    subscribeRaw: function(success, failure, args) {
+    subscribeRaw: function ( success, failure, args ) {
+        disconnectCallback = failure;
 	    subscribeRawCallback = success;
     },
 	
-    unsubscribeRaw: function(success, failure, args) {
+    unsubscribeRaw: function ( success, failure, args ) {
+        disconnectCallback = null;
 	    subscribeRawCallback = null;
 	    success("Unsubscribed from raw data.");
     },
