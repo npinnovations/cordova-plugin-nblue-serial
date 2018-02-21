@@ -133,9 +133,9 @@ function receiveStringLoop() {
         reader.loadAsync( 1 ).then(
             function ( size ) {
                 if ( size !== 1 ) {
-                    bluetoothSerial.disconnect();
+                    //bluetoothSerial.disconnect();
                     console.log( 'The underlying socket was closed before we were able to read the whole data. Client disconnected.' );
-                    disconnectCallback( "Socket closed" ); // TODO determine why this isn't working
+                    //disconnectCallback( "Socket closed" ); // TODO determine why this isn't working
                     return;
                 }
 
@@ -194,12 +194,25 @@ module.exports = {
     },
 	
     connect: function(success, failure, args) {
-	    var id = args[0];
+        var id = args[0];
+        var result = {
+            id: id,
+            status: "connected"
+        };
         disconnectCallback = failure;
+
         if ( !id || id === "" ) { return;}
 
         bluetooth.BluetoothDevice.fromIdAsync(id).then(
             function ( bluetoothDevice ) {
+
+                bluetoothDevice.onconnectionstatuschanged = function (evt) {
+                    if ( evt.target.connectionStatus === Windows.Devices.Bluetooth.BluetoothConnectionStatus.disconnected ) {
+                        result.status = "disconnected";
+                        failure( result );
+                    }
+                }
+
                 bluetoothDevice.getRfcommServicesAsync().done(
                     function ( services ) {
                         var service = services.services[0];
@@ -209,7 +222,7 @@ module.exports = {
                         else {
                             device = service.device;
                             socket = new sockets.StreamSocket();
-
+                            
                             if ( service.connectionHostName && service.connectionServiceName ) {
                                 socket.connectAsync(
                                     service.connectionHostName,
@@ -225,7 +238,7 @@ module.exports = {
 
                                     receiveStringLoop();
 
-                                    success( "Connected." );
+                                    success( result, { keepCallback: true } );
                                 },
                                     function ( e ) {
                                         failure( e.toString() );
