@@ -205,8 +205,9 @@ module.exports = {
 
         bluetooth.BluetoothDevice.fromIdAsync(id).then(
             function ( bluetoothDevice ) {
+                device = bluetoothDevice;
 
-                bluetoothDevice.onconnectionstatuschanged = function (evt) {
+                device.onconnectionstatuschanged = function (evt) {
                     if ( evt.target.connectionStatus === Windows.Devices.Bluetooth.BluetoothConnectionStatus.disconnected ) {
                         result.status = "disconnected";
                         failure( result );
@@ -220,7 +221,7 @@ module.exports = {
                             failure( "Access to the device is denied because the application was not granted access." );
                         }
                         else {
-                            device = service.device;
+                            //device = service.device;
                             socket = new sockets.StreamSocket();
                             
                             if ( service.connectionHostName && service.connectionServiceName ) {
@@ -265,6 +266,10 @@ module.exports = {
 	
     disconnect: function ( success, failure, args ) {	
 
+        if ( device && device.onconnectionstatuschanged !== null ) {
+            device.onconnectionstatuschanged = null;
+        }
+
 	    if (writer) {
             writer.close();
             writer = null;
@@ -278,7 +283,7 @@ module.exports = {
 	    if (socket) {
             socket.close();
             socket = null;
-	    }
+        }
 
 	    success("Device disconnected.");		
     },
