@@ -164,6 +164,19 @@ function receiveStringLoop() {
         
 }
 
+function returnEnum( result, object ) {
+    var answer = -1;
+    Object.keys( object ).forEach(
+        function ( key ) {
+            var value = object[key];
+            if ( value === result ) {
+                answer = key.toString();
+            }
+        }
+    );
+    return answer;
+}
+
 module.exports = {
 
     list: function (success, failure, args) {
