@@ -197,7 +197,7 @@ module.exports = {
                     //Start a watcher!
                     successFn = success;
                     failureFn = failure;
-                    startWatcher();
+                    //startWatcher();
 			    }
             },
             function ( error ) {
